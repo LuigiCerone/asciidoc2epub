@@ -6,14 +6,15 @@ var fs = require('fs');
 var nodePandoc = require('node-pandoc')
 
 // Take file name as parameter, load it somehow.
-var fileName = process.argv[2];
-if (typeof (fileName) == "undefined") {
-	console.log("Error - no arguments specified.");
-	console.log('Parameter is: ' + fileName);
+var filePath = process.argv[2];
+var newFileName = process.argv[3];
+
+if (typeof (filePath) == "undefined" || typeof (newFileName) == "undefined") {
+	console.log("Error - missing arguments.");
 	return;
 }
 
-fs.readFile(__dirname + '/' + fileName, function (err, data) {
+fs.readFile(__dirname + '/' + filePath, function (err, data) {
 	if (err) {
 		throw err;
 	}
@@ -31,15 +32,11 @@ fs.readFile(__dirname + '/' + fileName, function (err, data) {
 	let src = './word.docx';
 
 	// Arguments can be either a single String or in an Array
-	let args = '-f docbook -t epub -o output/200.epub';
-
-	// Set your callback function
-	const callback = (err, result) => {
-
-		if (err) console.error('Oh Nos: ', err)
-		return console.log(result), result
-	}
+	let args = '-f docbook -t epub -o output/' + newFileName + '.epub';
 
 	// Call pandoc
-	nodePandoc(docbook, args, callback);
+	nodePandoc(docbook, args, (err) => {
+		if (err) console.log('Error during conversion!');
+		console.log('Done!');
+	});
 });
