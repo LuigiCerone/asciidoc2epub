@@ -5,7 +5,7 @@ var fs = require('fs');
 
 var nodePandoc = require('node-pandoc')
 
-// Take file name as parameter, load it somehow.
+// Take file name as parameter and the file's name.
 var filePath = process.argv[2];
 var newFileName = process.argv[3];
 
@@ -27,9 +27,6 @@ fs.readFile(__dirname + '/' + filePath, function (err, data) {
 		header_footer: true
 	});
 	// console.log(docbook);
-
-
-	let src = './word.docx';
 
 	// Arguments can be either a single String or in an Array
 	let args = '-f docbook -t epub -o output/' + newFileName + '.epub';
