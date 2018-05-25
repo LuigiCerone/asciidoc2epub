@@ -2,8 +2,8 @@ var asciidoctor = require('asciidoctor.js')();
 require('asciidoctor-docbook.js')();
 
 var fs = require('fs');
-var pandoc = require('simple-pandoc');
 
+var nodePandoc = require('node-pandoc')
 
 // Take file name as parameter, load it somehow.
 var fileName = process.argv[2];
@@ -27,24 +27,19 @@ fs.readFile(__dirname + '/' + fileName, function (err, data) {
 	});
 	// console.log(docbook);
 
-	fs.writeFile("output/199.epub", docbook, function (err) {
-		if (err) {
-			return console.log(err);
-		}
 
-		var docbook2epub = pandoc('docbook', 'epub');
-		const inputStream = fs.createReadStream('output/199.epub');
-		const outputStream = fs.createWriteStream('index.md');
-		docbook2epub.stream(inputStream).pipe(outputStream);
-		// docbook2epub(docbook).then((epub) => {
-		// 	let text = epub.toString();
-	});
+	let src = './word.docx';
 
+	// Arguments can be either a single String or in an Array
+	let args = '-f docbook -t epub -o output/200.epub';
 
+	// Set your callback function
+	const callback = (err, result) => {
 
-	// 	// const outputStream = fs.createWriteStream('output/2.epub');
-	// 	// docbook2epub.stream(text).pipe(outputStream);
-	// 	// console.log(text);
+		if (err) console.error('Oh Nos: ', err)
+		return console.log(result), result
+	}
 
-	// });
+	// Call pandoc
+	nodePandoc(docbook, args, callback);
 });
