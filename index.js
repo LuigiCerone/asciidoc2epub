@@ -3,15 +3,22 @@ require('asciidoctor-docbook.js')();
 
 var fs = require('fs');
 
-var nodePandoc = require('node-pandoc')
+var nodePandoc = require('node-pandoc');
+var path = require("path");
 
 // Take file name as parameter and the file's name.
 var filePath = process.argv[2];
 var newFileName = process.argv[3];
 
-if (typeof (filePath) == "undefined" || typeof (newFileName) == "undefined") {
+if (typeof (filePath) == "undefined") {
 	console.log("Error - missing arguments.");
 	return;
+}
+
+// If epub's name is not specified use the name of asciidoc book.
+if(typeof (newFileName) == "undefined"){
+	newFileName = path.basename(filePath, path.extname(filePath));
+	console.log(`New file will be named {$newFileName}.epub`);
 }
 
 fs.readFile(__dirname + '/' + filePath, (err, data) => {
@@ -27,6 +34,7 @@ fs.readFile(__dirname + '/' + filePath, (err, data) => {
 	// console.log(docbook);
 
 	// Arguments can be either a single String or in an Array
+	ensureDirectoryExistence(__dirname + '/' + 'output/');
 	let args = '-f docbook -t epub -o output/' + newFileName + '.epub --quiet';
 
 	// Call pandoc
@@ -34,3 +42,13 @@ fs.readFile(__dirname + '/' + filePath, (err, data) => {
 		err ? console.log('Error during conversion!') : console.log('Done!');
 	});
 });
+
+
+function ensureDirectoryExistence(filePath) {
+	var dirname = path.dirname(filePath);
+	if (fs.existsSync(dirname)) {
+	  return true;
+	}
+	ensureDirectoryExistence(dirname);
+	fs.mkdirSync(dirname);
+  }
